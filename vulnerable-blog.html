@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechBlog - Блог о технологиях</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <style>
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --primary-text: #333333;
+            --secondary-text: #6c757d;
+            --accent-color: #007bff;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-text);
+            background: var(--secondary-bg);
+        }
+
+        .navbar {
+            background: var(--primary-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .main-content {
+            margin: 2rem 0;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .posts {
+            background: var(--primary-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: var(--primary-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .post {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .post:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .post-title {
+            color: var(--primary-text);
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .post-meta {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-excerpt {
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .widget {
+            margin-bottom: 2rem;
+        }
+
+        .widget:last-child {
+            margin-bottom: 0;
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .search-button {
+            padding: 0.5rem 1rem;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .category-list a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .category-count {
+            background: var(--secondary-bg);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .comments-section {
+            margin-top: 1rem;
+        }
+
+        .comment-form {
+            margin-bottom: 1rem;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .comment {
+            padding: 1rem;
+            background: var(--secondary-bg);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .login-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--primary-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .admin-panel {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--secondary-bg);
+            border-radius: 4px;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo">TechBlog</a>
+                <div class="nav-links">
+                    <a href="/">Главная</a>
+                    <a href="#" onclick="showLogin()">Войти</a>
+                    <a href="#" onclick="showAdminPanel()">Админ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="blog-grid">
+                <div class="posts">
+                    <article class="post">
+                        <a href="#" class="post-title">Новые тренды в веб-разработке 2024</a>
+                        <div class="post-meta">
+                            Автор: <span class="author">Александр Петров</span> | 19 ноября 2024
+                        </div>
+                        <div class="post-excerpt">
+                            В мире веб-разработки постоянно появляются новые технологии и подходы...
+                        </div>
+                        <a href="#" class="read-more">Читать далее →</a>
+                        <div class="comments-section">
+                            <h3>Комментарии</h3>
+                            <div class="comment-form">
+                                <textarea class="comment-input" placeholder="Оставьте комментарий..."></textarea>
+                                <button class="search-button" onclick="addComment(this)">Отправить</button>
+                            </div>
+                            <div class="comments"></div>
+                        </div>
+                    </article>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="widget">
+                        <h3 class="widget-title">Поиск</h3>
+                        <form class="search-form" onsubmit="performSearch(event)">
+                            <input type="text" class="search-input" placeholder="Поиск по блогу...">
+                            <button type="submit" class="search-button">Поиск</button>
+                        </form>
+                    </div>
+
+                    <div class="widget">
+                        <h3 class="widget-title">Категории</h3>
+                        <ul class="category-list">
+                            <li>
+                                <a href="#">
+                                    Веб-разработка
+                                    <span class="category-count">12</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Безопасность
+                                    <span class="category-count">8</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    JavaScript
+                                    <span class="category-count">15</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Form (Vulnerable to SQL Injection) -->
+    <div class="overlay" onclick="hideLogin()"></div>
+    <div class="login-form">
+        <h2>Вход в систему</h2>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Имя пользователя:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label>Пароль:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="submit-button">Войти</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel (Vulnerable to RCE) -->
+    <div class="admin-panel">
+        <h3>Панель администратора</h3>
+        <div class="form-group">
+            <label>Выполнить команду:</label>
+            <input type="text" id="command" placeholder="Например: ls -la">
+            <button onclick="executeCommand()" class="submit-button">Выполнить</button>
+        </div>
+        <div id="commandOutput" style="margin-top: 1rem; white-space: pre;"></div>
+    </div>
+
+    <script>
+        // Vulnerable search function (XSS)
+        function performSearch(event) {
+            event.preventDefault();
+            const query = event.target.querySelector('.search-input').value;
+            const searchResults = document.createElement('div');
+            searchResults.innerHTML = `<div class="post">
+                <h3>Результаты поиска для: ${query}</h3>
+                <p>Найдено 0 результатов.</p>
+            </div>`;
+            document.querySelector('.posts').prepend(searchResults);
+        }
+
+        // Vulnerable comment system (Stored XSS)
+        function addComment(button) {
+            const commentText = button.previousElementSibling.value;
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment';
+            commentDiv.innerHTML = commentText;
+            button.parentElement.nextElementSibling.appendChild(commentDiv);
+            button.previousElementSibling.value = '';
+        }
+
+        // Login form handling (SQL Injection)
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Vulnerable SQL query simulation
+            const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+            console.log('Executing query:', query);
+
+            // Simulate successful login with common SQL injection
+            if (username.includes("' OR '1'='1")) {
+                alert('Успешный вход! (SQL Injection обнаружен)');
+                hideLogin();
+                showAdminPanel();
+            } else {
+                alert('Неверные учетные данные');
+            }
+        }
+
+        // Command execution (RCE simulation)
+        function executeCommand() {
+            const command = document.getElementById('command').value;
+            document.getElementById('commandOutput').textContent = `$ ${command}\n[Симуляция выполнения команды: ${command}]\n`;
+        }
+
+        // UI Functions
+        function showLogin() {
+            document.querySelector('.overlay').classList.add('active');
+            document.querySelector('.login-form').classList.add('active');
+        }
+
+        function hideLogin() {
+            document.querySelector('.overlay').classList.remove('active');
+            document.querySelector('.login-form').classList.remove('active');
+        }
+
+        function showAdminPanel() {
+            document.querySelector('.admin-panel').classList.add('active');
+        }
+    </script>
+</body>
+</html>
